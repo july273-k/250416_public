@@ -1,8 +1,8 @@
 import streamlit as st
 
-# 질문 및 선택지
+# 질문 리스트와 각 질문의 관련성을 설정
 questions = [
-    "1. 사람들과의 대화에서 에너지를 얻는 편인가요?",
+    "1. 사람들과의 대화에서 에너지를 얻는 편인가요? (1: 매우 비동의, 5: 매우 동의)",
     "2. 친구와 영화를 보는 것보다 혼자 책을 읽는 것을 더 선호하나요?",
     "3. 계획을 세우는 것을 좋아하나요?",
     "4. 감정보다 논리적인 결정을 선호하나요?",
@@ -25,7 +25,7 @@ questions = [
 ]
 
 # MBTI 점수 초기화
-mbti_score = {
+mbti_scores = {
     'E': 0,
     'I': 0,
     'S': 0,
@@ -36,47 +36,49 @@ mbti_score = {
     'P': 0,
 }
 
-# 애플리케이션 제목
+# 질문에 대한 응답 수집
 st.title("MBTI 테스트 🧩")
 
-# 질문에 대한 응답 수집을 위한 빈 리스트
 responses = []
 
-# 질문을 반복하여 슬라이더를 통해 응답받기
 for question in questions:
     response = st.slider(question, 1, 5, 3)  # 1에서 5 사이의 점수를 받음
     responses.append(response)
 
-# 결과 계산과 출력 버튼
+# 결과 버튼
 if st.button("결과 보기"):
-    # 점수 계산
+    # 각 질문에 대한 점수 계산
     for i, response in enumerate(responses):
-        if i in [0, 4, 8]:  # E 선택
-            mbti_score['E'] += response
-        else:
-            mbti_score['I'] += response  # I 선택
+        # E/I 관련 질문
+        if i in [0, 4, 8]:  # E 질문: 대화에서 에너지를 얻고 교류를 즐기면 E
+            mbti_scores['E'] += response
+        else:  # 나머지는 I
+            mbti_scores['I'] += response
 
-        if i in [1, 2, 9]:  # S 선택
-            mbti_score['S'] += response
-        else:
-            mbti_score['N'] += response  # N 선택
+        # S/N 관련 질문
+        if i in [1, 2, 10]:  # S 질문: 계획적이고 세부사항을 중요하게 여기는 경우
+            mbti_scores['S'] += response
+        else:  # 나머지는 N
+            mbti_scores['N'] += response
 
-        if i in [3, 9, 14]:  # T 선택
-            mbti_score['T'] += response
-        else:
-            mbti_score['F'] += response  # F 선택
+        # T/F 관련 질문
+        if i in [3, 10, 15]:  # T 질문: 논리적인 결정을 선호하는 경우
+            mbti_scores['T'] += response
+        else:  # 나머지는 F
+            mbti_scores['F'] += response
 
-        if i in [9, 12, 18]:  # J 선택
-            mbti_score['J'] += response
-        else:
-            mbti_score['P'] += response  # P 선택
+        # J/P 관련 질문
+        if i in [2, 7, 19]:  # J 질문: 계획적이고 즉흥적이지 않은 경우
+            mbti_scores['J'] += response
+        else:  # 나머지는 P
+            mbti_scores['P'] += response
 
     # MBTI 유형 결정
     mbti_type = ""
-    mbti_type += 'E' if mbti_score['E'] > mbti_score['I'] else 'I'
-    mbti_type += 'S' if mbti_score['S'] > mbti_score['N'] else 'N'
-    mbti_type += 'T' if mbti_score['T'] > mbti_score['F'] else 'F'
-    mbti_type += 'J' if mbti_score['J'] > mbti_score['P'] else 'P'
+    mbti_type += 'E' if mbti_scores['E'] > mbti_scores['I'] else 'I'
+    mbti_type += 'S' if mbti_scores['S'] > mbti_scores['N'] else 'N'
+    mbti_type += 'T' if mbti_scores['T'] > mbti_scores['F'] else 'F'
+    mbti_type += 'J' if mbti_scores['J'] > mbti_scores['P'] else 'P'
 
     # 결과 출력
     st.subheader("결과 🎉")
@@ -107,4 +109,3 @@ if st.button("결과 보기"):
         st.write(f"**{mbti_type}**: {mbti_descriptions[mbti_type]} 🌟")
 
 # 스트림릿 실행
-
